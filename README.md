@@ -1,4 +1,4 @@
-# Github Analytics Dashboard
+# GitHub Analytics Dashboard
 
 A react app that fetches and displays analytics for any public GitHub Repository.
 
