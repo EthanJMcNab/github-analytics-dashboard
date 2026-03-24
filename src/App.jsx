@@ -1,14 +1,16 @@
 import { useState } from "react";
 
 function App() {
-  const [repoInput, setRepoInput] = useState("");
-  const [repoData, setRepoData] = useState(null);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [repoInput, setRepoInput] = useState(""); // User input for repo
+  const [repoData, setRepoData] = useState(null); // Repo data returned from REST GitHub API
+  const [error, setError] = useState(""); // Error Handling message, incorrect format/missing repo
+  const [loading, setLoading] = useState(false); // Loading state, for fetch requests
+  const [languages, setLanguages] = useState([]); // Repo languages data
 
   const handleSearch = async () => {
     setError("");
     setRepoData(null);
+    setLanguages([]);
 
     const trimmedInput = repoInput.trim();
     const [owner, repo] = trimmedInput.split("/");
@@ -21,13 +23,28 @@ function App() {
     try {
 
       setLoading(true);
+
+      // Fetch Repository
       const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
       const data = await res.json();
 
       if (!res.ok) {
         throw new Error("Repository Not Found")
       }
+
       setRepoData(data);
+
+      // Fetch Languages data
+      const langRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/languages`);
+      const langData = await langRes.json();
+
+      // Convert GitHub language object to array
+      const formattedLanguages = Object.entries(langData).map(([name, value]) => ({
+        name,
+        value,
+      }));
+
+      setLanguages(formattedLanguages);
     }
     catch (err) {
       setError(err.message);
