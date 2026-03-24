@@ -4,32 +4,37 @@ function App() {
   const [repoInput, setRepoInput] = useState("");
   const [repoData, setRepoData] = useState(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSearch = async () => {
     setError("");
-    setRepoData("");
+    setRepoData(null);
 
     const trimmedInput = repoInput.trim();
-    const [owner, repo] = repoInput.split("/");
+    const [owner, repo] = trimmedInput.split("/");
 
     if (!owner || !repo) {
-      setError("Please use format: owner/repo.")
+      setError("Please use format: owner/repo")
       return;
     }
 
     try {
+
+      setLoading(true);
       const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
       const data = await res.json();
 
       if (!res.ok) {
-        setError("Repository Not Found.")
+        throw new Error("Repository Not Found")
       }
+      setRepoData(data);
     }
     catch (err) {
       setError(err.message);
     }
-
-    setRepoData(data);
+    finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -44,6 +49,12 @@ function App() {
       />
 
       <button onClick={handleSearch}>Search</button>
+
+      {loading && (
+        <p style={{ color: "black", marginTop: "10px" }}>
+          {"Loading..."}
+        </p>
+      )}
 
       {error && (
         <p style={{ color: "red", marginTop: "10px" }}>
