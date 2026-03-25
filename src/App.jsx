@@ -1,5 +1,6 @@
 import { useState } from "react";
 import LanguageChart from "./components/LanguageChart";
+import LanguageTable from "./components/LanguageTable";
 
 function App() {
   const [repoInput, setRepoInput] = useState(""); // User input for repo
@@ -91,6 +92,8 @@ function App() {
 
       {/* LanguageData Chart */}
       {languages.length > 0 && <LanguageChart data={languages} />}
+      {/* LanguageData Table */}
+      {languages.length > 0 && <LanguageTable data={languages} />}
 
     </div>
   );

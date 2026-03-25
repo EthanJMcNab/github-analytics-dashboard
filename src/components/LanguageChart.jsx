@@ -16,7 +16,7 @@ function LanguageChart({ data }) {
     return (
         <div style={{ marginTop: "30px" }}>
             <h3>Language Breakdown</h3>
-            <PieChart width={400} height={300}>
+            <PieChart width="100%" height={300}>
                 <Pie
                     data={data}
                     dataKey="value"
