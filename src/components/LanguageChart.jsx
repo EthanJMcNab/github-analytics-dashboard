@@ -1,6 +1,14 @@
-import { PieChart, Pie, Tooltip, Legend } from "recharts";
+import { PieChart, Pie, Tooltip, Legend, Cell } from "recharts";
 
-function languageChart({ data }) {
+const COLOURS = [
+    "#38bdf8", // blue
+    "#22c55e", // green
+    "#f59e0b", // amber
+    "#ef4444", // red
+    "#a78bfa", // purple
+]
+
+function LanguageChart({ data }) {
     if (!data.length) {
         return null;
     }
@@ -16,8 +24,11 @@ function languageChart({ data }) {
                     cx="50%"
                     cy="50%"
                     outerRadius={100}
-                    label
-                />
+                >
+                    {data.map((entry, index) => (
+                        <Cell key={index} fill={COLOURS[index % COLOURS.length]} />
+                    ))}
+                </Pie>
                 <Tooltip />
                 <Legend />
             </PieChart>
