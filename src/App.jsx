@@ -1,4 +1,5 @@
 import { useState } from "react";
+import LanguageChart from "./components/languageChart";
 
 function App() {
   const [repoInput, setRepoInput] = useState(""); // User input for repo
@@ -87,6 +88,9 @@ function App() {
           <p>Open Issues: {repoData.open_issues_count}</p>
         </div>
       )}
+
+      // LanguageData Chart
+      {languages.length > 0 && <LanguageChart data={languages} />}
 
     </div>
   );
