@@ -86,13 +86,23 @@ function App() {
           </p>
         )}
 
+        {/*Repo Name & Description*/}
         {repoData && (
-          <div style={{ marginTop: "20px" }}>
-            <h2>{repoData.full_name}</h2>
-            <p>Stars: {repoData.stargazers_count}</p>
-            <p>Forks: {repoData.forks_count}</p>
-            <p>Open Issues: {repoData.open_issues_count}</p>
-          </div>
+          <section className="repoSection">
+            <div className="repoHeader">
+              <h2 className="repoTitle">
+                <a href={repoData.html_url} target="_blank" rel="noreferrer">
+                  {repoData.full_name}
+                </a>
+              </h2>
+
+              {repoData.description && (
+                <p className="repoDescription">
+                  {repoData.description}
+                </p>
+              )}
+            </div>
+          </section>
         )}
 
         {/* LanguageData Chart & Table*/}
