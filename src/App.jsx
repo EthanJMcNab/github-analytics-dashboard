@@ -56,6 +56,22 @@ function App() {
     }
   }
 
+  const repoStats = repoData
+    ? [
+      { label: "Stars", value: repoData.stargazers_count },
+      { label: "Forks", value: repoData.forks_count },
+      { label: "Open Issues", value: repoData.open_issues_count },
+      { label: "Primary Language", value: repoData.language || "N/A" },
+      { label: "Last Updated", value: new Date(repoData.updated_at).toLocaleDateString() },
+
+      { label: "Watchers", value: repoData.watchers_count },
+      { label: "Default Branch", value: repoData.default_branch },
+      { label: "Created Date", value: new Date(repoData.created_at).toLocaleDateString() },
+      { label: "License", value: repoData.license?.name || "None" },
+      { label: "Size", value: `${(repoData.size / 1024).toFixed(1)} MB` },
+    ]
+    : [];
+
   return (
     <div className="app">
       <div className="hero">
@@ -86,7 +102,7 @@ function App() {
           </p>
         )}
 
-        {/*Repo Name & Description*/}
+        {/*Repo Name, Description & Stats*/}
         {repoData && (
           <section className="repoSection">
             <div className="repoHeader">
@@ -101,6 +117,15 @@ function App() {
                   {repoData.description}
                 </p>
               )}
+            </div>
+
+            <div className="statsGrid">
+              {repoStats.map((stat, index) => (
+                <div className="statCard" key={index}>
+                  <span>{stat.label}</span>
+                  <strong>{stat.value}</strong>
+                </div>
+              ))}
             </div>
           </section>
         )}
