@@ -1,11 +1,11 @@
-import { PieChart, Pie, Tooltip, Legend, Cell } from "recharts";
+import { PieChart, Pie, Tooltip, Legend, Cell, ResponsiveContainer } from "recharts";
 
 const COLOURS = [
-    "#38bdf8", // blue
-    "#22c55e", // green
-    "#f59e0b", // amber
-    "#ef4444", // red
-    "#a78bfa", // purple
+    "#3b2f2f", // deep brown
+    "#6b5b4b", // warm taupe
+    "#a68a64", // muted gold
+    "#d8cbb8", // light beige
+    "#8c6f5a", // soft brown
 ]
 
 function LanguageChart({ data }) {
@@ -14,24 +14,34 @@ function LanguageChart({ data }) {
     }
 
     return (
-        <div style={{ marginTop: "30px" }}>
-            <h3>Language Breakdown</h3>
-            <PieChart width="100%" height={300}>
-                <Pie
-                    data={data}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={100}
-                >
-                    {data.map((entry, index) => (
-                        <Cell key={index} fill={COLOURS[index % COLOURS.length]} />
-                    ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-            </PieChart>
+        <div className="chartWrapper">
+            <h2>Language Breakdown</h2>
+
+            <div className="chartContainer">
+                <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                        <Pie
+                            data={data}
+                            dataKey="value"
+                            nameKey="name"
+                            cx="50%"
+                            cy="46%"
+                            outerRadius={120}
+                        >
+                            {data.map((entry, index) => (
+                                <Cell key={index} fill={COLOURS[index % COLOURS.length]} />
+                            ))}
+                        </Pie>
+
+                        <Tooltip />
+                        <Legend
+                            layout="horizontal"
+                            verticalAlign="bottom"
+                            align="center"
+                        />
+                    </PieChart>
+                </ResponsiveContainer>
+            </div>
         </div>
     );
 }

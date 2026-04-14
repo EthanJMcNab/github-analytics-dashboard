@@ -95,10 +95,20 @@ function App() {
           </div>
         )}
 
-        {/* LanguageData Chart */}
-        {languages.length > 0 && <LanguageChart data={languages} />}
-        {/* LanguageData Table */}
-        {languages.length > 0 && <LanguageTable data={languages} />}
+        {/* LanguageData Chart & Table*/}
+        {languages.length > 0 && (
+          <section className="languagesSection">
+            <div className="languagesGrid">
+              <div className="card">
+                <LanguageChart data={languages} />
+              </div>
+
+              <div className="card">
+                <LanguageTable data={languages} />
+              </div>
+            </div>
+          </section>
+        )}
       </div>
       <div className="footer">
         <p>
