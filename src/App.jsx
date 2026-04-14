@@ -103,7 +103,13 @@ function App() {
       <div className="hero">
         <h1>GitHub Analytics Dashboard</h1>
 
-        <div className="searchBar">
+        <form
+          className="searchBar"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSearch();
+          }}
+        >
           <input
             type="text"
             placeholder="owner/repo"
@@ -111,21 +117,22 @@ function App() {
             onChange={(e) => setRepoInput(e.target.value)}
           />
 
-          <button onClick={handleSearch}>Search</button>
-        </div>
+          <button type="submit">Search</button>
+        </form>
       </div>
 
       <div className="results">
         {loading && (
-          <p style={{ color: "black", marginTop: "10px" }}>
-            {"Loading..."}
-          </p>
+          <div className="loaderWrapper">
+            <div className="loader"></div>
+          </div>
         )}
 
         {error && (
-          <p style={{ color: "red", marginTop: "10px" }}>
-            {error}
-          </p>
+          <div className="errorBox">
+            <p className="errorTitle">Something went wrong</p>
+            <p className="errorMessage">{error}</p>
+          </div>
         )}
 
         {/*Repo Name, Description & Stats*/}

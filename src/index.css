@@ -98,6 +98,60 @@ h3 {
 }
 
 /* =========================
+   LOADING SPINNER
+========================= */
+
+.loaderWrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.loader {
+    width: 28px;
+    height: 28px;
+    border: 3px solid #e7dfd2;
+    border-top: 3px solid #5a4632;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =========================
+   ERROR STATE
+========================= */
+
+.errorBox {
+    margin: 20px auto;
+    max-width: 500px;
+    padding: 16px 20px;
+    background: #fdf3f2;
+    border: 1px solid #e7b4b0;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.errorTitle {
+    margin: 0 0 6px 0;
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #8b2e2e;
+}
+
+.errorMessage {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    color: #6b3a3a;
+}
+
+/* =========================
    REPO SECTION
 ========================= */
 
