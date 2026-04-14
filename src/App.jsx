@@ -94,8 +94,11 @@ function App() {
   // Slices the recent weeks into weekly commit data, allowing the chart to accept it
   const displayedCommitActivity = commitActivity
     .slice(-commitRange)
-    .map((week, index) => ({
-      name: `W${index + 1}`,
+    .map((week) => ({
+      name: new Date(week.week * 1000).toLocaleDateString("en-AU", {
+        day: "2-digit",
+        month: "short",
+      }),
       commits: week.total,
     }));
 
@@ -126,6 +129,10 @@ function App() {
     const previousTotal = previousPeriod.reduce((sum, week) => sum + week.total, 0);
 
     let trend = "No prior data";
+
+    if (commitRange === commitActivity.length) {
+      trend = "Full Dataset";
+    }
 
     if (previousPeriod.length > 0) {
       if (previousTotal === 0 && totalCommits > 0) {
