@@ -8,6 +8,8 @@ function App() {
   const [error, setError] = useState(""); // Error Handling message, incorrect format/missing repo
   const [loading, setLoading] = useState(false); // Loading state, for fetch requests
   const [languages, setLanguages] = useState([]); // Repo languages data
+  const [commitActivity, setCommitActivity] = useState([]); // Stores commit data
+  const [commitRange, setCommitRange] = useState(12); // Stores amount of weeks pulled from API for commit chart (Default 3 months)
 
   const handleSearch = async () => {
     setError("");
@@ -47,6 +49,22 @@ function App() {
       }));
 
       setLanguages(formattedLanguages);
+
+      // Fetch weekly commit data from GitHub API (last 52 weeks)
+      const activityRes = await fetch(
+        `https://api.github.com/repos/${owner}/${repo}/stats/commit_activity`
+      );
+
+      // GitHub API returns 202 when stats are being generated and are not yet ready
+      if (activityRes.status === 202) {
+        setCommitActivity([]);
+      } else if (!activityRes.ok) {
+        throw new Error("Failed to fetch commit activity");
+      } else {
+        const activityData = await activityRes.json();
+        setCommitActivity(activityData);
+      }
+
     }
     catch (err) {
       setError(err.message);
@@ -55,7 +73,7 @@ function App() {
       setLoading(false);
     }
   }
-
+  // Repo Statistics formatted for the stat summary cards (underneath the hero)
   const repoStats = repoData
     ? [
       { label: "Stars", value: repoData.stargazers_count },
@@ -71,6 +89,14 @@ function App() {
       { label: "Size", value: `${(repoData.size / 1024).toFixed(1)} MB` },
     ]
     : [];
+
+  // Slices the recent weeks into weekly commit data, allowing the chart to accept it
+  const displayedCommitActivity = commitActivity
+    .slice(-commitRange)
+    .map((week, index) => ({
+      name: `W${index + 1}`,
+      commits: week.total,
+    }));
 
   return (
     <div className="app">
@@ -147,7 +173,7 @@ function App() {
       </div>
       <div className="footer">
         <p>
-          Created by Ethan J McNab. Data sourced via the GitHub API.
+          Created by Ethan J McNab. Data sourced via GitHub API.
         </p>
       </div>
     </div>
