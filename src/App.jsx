@@ -99,6 +99,55 @@ function App() {
       commits: week.total,
     }));
 
+  // Derived commit insights for the selected date range
+  const commitInsights = (() => {
+    if (!commitActivity.length) {
+      return null;
+    }
+
+    // Current selected period
+    const currentPeriod = commitActivity.slice(-commitRange);
+
+    // Previous period of the same length, immediately before the current one
+    const previousPeriod = commitActivity.slice(-commitRange * 2, -commitRange);
+
+    const totalCommits = currentPeriod.reduce((sum, week) => sum + week.total, 0);
+
+    const averagePerWeek =
+      currentPeriod.length > 0 ? (totalCommits / currentPeriod.length).toFixed(1) : "0.0";
+
+    const peakWeek = currentPeriod.reduce(
+      (max, week) => (week.total > max.total ? week : max),
+      currentPeriod[0]
+    );
+
+    const inactiveWeeks = currentPeriod.filter((week) => week.total === 0).length;
+
+    const previousTotal = previousPeriod.reduce((sum, week) => sum + week.total, 0);
+
+    let trend = "No prior data";
+
+    if (previousPeriod.length > 0) {
+      if (previousTotal === 0 && totalCommits > 0) {
+        trend = "↑ New activity";
+      } else if (previousTotal === 0 && totalCommits === 0) {
+        trend = "No change";
+      } else {
+        const percentChange = (((totalCommits - previousTotal) / previousTotal) * 100).toFixed(1);
+        const direction = percentChange >= 0 ? "↑" : "↓";
+        trend = `${direction} ${Math.abs(percentChange)}% vs previous period`;
+      }
+    }
+
+    return {
+      totalCommits,
+      averagePerWeek,
+      peakWeek: peakWeek?.total ?? 0,
+      inactiveWeeks,
+      trend,
+    };
+  })();
+
   return (
     <div className="app">
       <div className="hero">
@@ -184,13 +233,48 @@ function App() {
         {commitActivity.length > 0 && (
           <section className="commitSection">
             <div className="commitControls">
-              <button onClick={() => setCommitRange(12)}>12 Weeks</button>
-              <button onClick={() => setCommitRange(26)}>26 Weeks</button>
-              <button onClick={() => setCommitRange(52)}>52 Weeks</button>
+              <button onClick={() => setCommitRange(12)}>12W</button>
+              <button onClick={() => setCommitRange(26)}>26W</button>
+              <button onClick={() => setCommitRange(52)}>52W</button>
             </div>
 
-            <div className="card">
-              <CommitActivityChart data={displayedCommitActivity} />
+            <div className="commitGrid">
+              <div className="card">
+                <CommitActivityChart data={displayedCommitActivity} />
+              </div>
+
+              {commitInsights && (
+                <div className="card commitInsights">
+                  <h2 className="commitInsightsTitle">Commit Insights</h2>
+
+                  <div className="commitInsightsList">
+                    <div className="insightItem">
+                      <span>Total Commits</span>
+                      <strong>{commitInsights.totalCommits}</strong>
+                    </div>
+
+                    <div className="insightItem">
+                      <span>Avg / Week</span>
+                      <strong>{commitInsights.averagePerWeek}</strong>
+                    </div>
+
+                    <div className="insightItem">
+                      <span>Peak Week</span>
+                      <strong>{commitInsights.peakWeek}</strong>
+                    </div>
+
+                    <div className="insightItem">
+                      <span>Inactive Weeks</span>
+                      <strong>{commitInsights.inactiveWeeks}</strong>
+                    </div>
+
+                    <div className="insightItem">
+                      <span>Trend</span>
+                      <strong>{commitInsights.trend}</strong>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </section>
         )}

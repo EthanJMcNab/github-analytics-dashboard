@@ -39,7 +39,7 @@ h3 {
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding-top: 120px;
+    padding-top: 60px;
     gap: 24px;
 }
 
@@ -304,7 +304,7 @@ h3 {
 }
 
 /* =========================
-   COMMIT ACTIVITY
+   COMMIT ACTIVITY CHART
 ========================= */
 
 .commitSection {
@@ -340,6 +340,58 @@ h3 {
 .commitChartContainer {
     width: 100%;
     height: 340px;
+}
+
+/* =========================
+   COMMIT INSIGHTS ITEMS
+========================= */
+
+.commitGrid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.commitInsightsTitle {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.commitInsightsList {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.insightItem {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #e7dfd2;
+}
+
+.insightItem:last-child {
+    border-bottom: none;
+}
+
+.insightItem span {
+    font-size: 0.85rem;
+    color: #6b6257;
+    margin-bottom: 6px;
+}
+
+.insightItem strong {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #111;
+}
+
+@media (max-width: 900px) {
+    .commitGrid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* =========================
