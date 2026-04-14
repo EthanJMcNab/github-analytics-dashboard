@@ -57,44 +57,49 @@ function App() {
   }
 
   return (
-    <div>
-      <h1>GitHub Analytics Dashboard</h1>
+    <div className="app">
+      <div className="hero">
+        <h1>GitHub Analytics Dashboard</h1>
 
-      <input
-        type="text"
-        placeholder="owner/repo"
-        value={repoInput}
-        onChange={(e) => setRepoInput(e.target.value)}
-      />
+        <div className="searchBar">
+          <input
+            type="text"
+            placeholder="owner/repo"
+            value={repoInput}
+            onChange={(e) => setRepoInput(e.target.value)}
+          />
 
-      <button onClick={handleSearch}>Search</button>
-
-      {loading && (
-        <p style={{ color: "black", marginTop: "10px" }}>
-          {"Loading..."}
-        </p>
-      )}
-
-      {error && (
-        <p style={{ color: "red", marginTop: "10px" }}>
-          {error}
-        </p>
-      )}
-
-      {repoData && (
-        <div style={{ marginTop: "20px" }}>
-          <h2>{repoData.full_name}</h2>
-          <p>Stars: {repoData.stargazers_count}</p>
-          <p>Forks: {repoData.forks_count}</p>
-          <p>Open Issues: {repoData.open_issues_count}</p>
+          <button onClick={handleSearch}>Search</button>
         </div>
-      )}
+      </div>
 
-      {/* LanguageData Chart */}
-      {languages.length > 0 && <LanguageChart data={languages} />}
-      {/* LanguageData Table */}
-      {languages.length > 0 && <LanguageTable data={languages} />}
+      <div className="results">
+        {loading && (
+          <p style={{ color: "black", marginTop: "10px" }}>
+            {"Loading..."}
+          </p>
+        )}
 
+        {error && (
+          <p style={{ color: "red", marginTop: "10px" }}>
+            {error}
+          </p>
+        )}
+
+        {repoData && (
+          <div style={{ marginTop: "20px" }}>
+            <h2>{repoData.full_name}</h2>
+            <p>Stars: {repoData.stargazers_count}</p>
+            <p>Forks: {repoData.forks_count}</p>
+            <p>Open Issues: {repoData.open_issues_count}</p>
+          </div>
+        )}
+
+        {/* LanguageData Chart */}
+        {languages.length > 0 && <LanguageChart data={languages} />}
+        {/* LanguageData Table */}
+        {languages.length > 0 && <LanguageTable data={languages} />}
+      </div>
     </div>
   );
 }
