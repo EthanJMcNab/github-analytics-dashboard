@@ -100,6 +100,11 @@ function App() {
         {/* LanguageData Table */}
         {languages.length > 0 && <LanguageTable data={languages} />}
       </div>
+      <div className="footer">
+        <p>
+          Created by Ethan J McNab. Data sourced via the GitHub API.
+        </p>
+      </div>
     </div>
   );
 }

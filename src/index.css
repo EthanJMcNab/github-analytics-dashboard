@@ -74,3 +74,22 @@ h2 {
 .searchBar button:hover {
     opacity: 0.92;
 }
+
+::selection {
+    background: #5a4632;
+    color: #f5f1ea;
+}
+
+.footer {
+    margin-top: 80px;
+    padding: 40px 20px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #6b6257;
+    border-top: 1px solid #e7dfd2;
+}
+
+.footer p {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+}
