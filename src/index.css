@@ -1,3 +1,7 @@
+/* =========================
+   GLOBAL STYLES
+========================= */
+
 ::selection {
     background: #5a4632;
     color: #f5f1ea;
@@ -16,10 +20,18 @@ h3 {
     font-family: 'Fraunces', serif;
 }
 
+/* =========================
+   APP LAYOUT
+========================= */
+
 .app {
     min-height: 100vh;
     padding: 0 20px;
 }
+
+/* =========================
+   HERO SECTION
+========================= */
 
 .hero {
     display: flex;
@@ -38,6 +50,10 @@ h3 {
     font-weight: 500;
     margin: 0;
 }
+
+/* =========================
+   SEARCH BAR
+========================= */
 
 .searchBar {
     display: flex;
@@ -81,6 +97,10 @@ h3 {
     opacity: 0.92;
 }
 
+/* =========================
+   REPO SECTION
+========================= */
+
 .repoSection {
     margin-top: 40px;
 }
@@ -115,6 +135,10 @@ h3 {
     margin: 0 auto;
 }
 
+/* =========================
+   STATS GRID
+========================= */
+
 .statsGrid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -147,17 +171,9 @@ h3 {
     line-height: 1.3;
 }
 
-@media (max-width: 1000px) {
-    .statsGrid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 650px) {
-    .statsGrid {
-        grid-template-columns: 1fr;
-    }
-}
+/* =========================
+   CARD (REUSABLE)
+========================= */
 
 .card {
     background: #fff;
@@ -166,6 +182,10 @@ h3 {
     padding: 20px;
 }
 
+/* =========================
+   LANGUAGES SECTION
+========================= */
+
 .languagesGrid {
     display: grid;
     grid-template-columns: 1fr 2fr;
@@ -173,11 +193,9 @@ h3 {
     margin-top: 30px;
 }
 
-@media (max-width: 800px) {
-    .languagesGrid {
-        grid-template-columns: 1fr;
-    }
-}
+/* =========================
+   CHART
+========================= */
 
 .chartContainer {
     width: 100%;
@@ -200,18 +218,16 @@ h3 {
     text-align: center;
 }
 
+/* =========================
+   TABLE
+========================= */
+
 .tableWrapper {
     margin-top: 20px;
 }
 
-.tableTitle {
-    text-align: center;
-    margin-bottom: 16px;
-}
-
 .tableContainer {
     padding: 0 16px;
-    /* 👈 THIS is the side spacing */
 }
 
 .languageTable {
@@ -233,6 +249,10 @@ h3 {
     text-align: right;
 }
 
+/* =========================
+   FOOTER
+========================= */
+
 .footer {
     margin-top: 80px;
     padding: 40px 20px;
@@ -245,4 +265,26 @@ h3 {
 .footer p {
     margin: 0;
     font-family: 'Inter', sans-serif;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1000px) {
+    .statsGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 800px) {
+    .languagesGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 650px) {
+    .statsGrid {
+        grid-template-columns: 1fr;
+    }
 }
