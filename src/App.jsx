@@ -1,6 +1,7 @@
 import { useState } from "react";
 import LanguageChart from "./components/LanguageChart";
 import LanguageTable from "./components/LanguageTable";
+import CommitActivityChart from "./components/CommitActivityChart";
 
 function App() {
   const [repoInput, setRepoInput] = useState(""); // User input for repo
@@ -177,6 +178,23 @@ function App() {
             </div>
           </section>
         )}
+
+        {/* Commit Activity */}
+        {/* Github API Pushes only 52 weeks of commit data, hence this is the limitation of the chart */}
+        {commitActivity.length > 0 && (
+          <section className="commitSection">
+            <div className="commitControls">
+              <button onClick={() => setCommitRange(12)}>12 Weeks</button>
+              <button onClick={() => setCommitRange(26)}>26 Weeks</button>
+              <button onClick={() => setCommitRange(52)}>52 Weeks</button>
+            </div>
+
+            <div className="card">
+              <CommitActivityChart data={displayedCommitActivity} />
+            </div>
+          </section>
+        )}
+
       </div>
       <div className="footer">
         <p>

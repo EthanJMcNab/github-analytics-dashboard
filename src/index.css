@@ -304,6 +304,45 @@ h3 {
 }
 
 /* =========================
+   COMMIT ACTIVITY
+========================= */
+
+.commitSection {
+    margin-top: 40px;
+}
+
+.commitControls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.commitControls button {
+    border: 1px solid #e7dfd2;
+    background: #fff;
+    color: #111;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+}
+
+.commitControls button:hover {
+    background: #f0ebe3;
+}
+
+.commitTitle {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.commitChartContainer {
+    width: 100%;
+    height: 340px;
+}
+
+/* =========================
    FOOTER
 ========================= */
 
