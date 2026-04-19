@@ -131,7 +131,7 @@ function App() {
     let trend = "No prior data";
 
     if (commitRange === commitActivity.length) {
-      trend = "Full Dataset";
+      trend = "Trend: N/A (full range selected)";
     }
 
     if (previousPeriod.length > 0) {

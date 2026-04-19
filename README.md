@@ -53,6 +53,22 @@ This project goes beyond basic repository data by visualising trends, activity, 
 
 ---
 
+## Getting Started
+
+### Prerequisites
+- Node.js (v16+ recommended)
+- npm
+
+### Installation
+
+```bash
+git clone https://github.com/EthanJMcNab/github-analytics-dashboard.git
+cd github-analytics-dashboard
+npm install
+npm run dev
+
+---
+
 ## Motivation
 
 This project was built to move beyond simple API consumption and focus on:
