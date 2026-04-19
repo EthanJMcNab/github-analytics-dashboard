@@ -66,7 +66,7 @@ git clone https://github.com/EthanJMcNab/github-analytics-dashboard.git
 cd github-analytics-dashboard
 npm install
 npm run dev
-
+```
 ---
 
 ## Motivation
