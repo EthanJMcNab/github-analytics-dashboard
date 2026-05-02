@@ -3,6 +3,43 @@ import { formatLanguages } from "../utils/repositoryAnalytics";
 const GITHUB_API_BASE_URL = "https://api.github.com";
 const COMMIT_ACTIVITY_RETRY_DELAY_MS = 1000;
 const COMMIT_ACTIVITY_RETRY_LIMIT = 5;
+const READINESS_CHECKS = [
+  {
+    description: "Helps developers understand the project quickly.",
+    label: "README",
+    paths: ["README.md", "readme.md"],
+  },
+  {
+    description: "Clarifies how the code can be used or reused.",
+    label: "License",
+    paths: ["LICENSE", "LICENSE.md", "license.md"],
+  },
+  {
+    description: "Explains how others should contribute.",
+    label: "Contributing Guide",
+    paths: ["CONTRIBUTING.md", ".github/CONTRIBUTING.md"],
+  },
+  {
+    description: "Sets expectations for community behaviour.",
+    label: "Code of Conduct",
+    paths: ["CODE_OF_CONDUCT.md", ".github/CODE_OF_CONDUCT.md"],
+  },
+  {
+    description: "Signals automated validation for changes.",
+    label: "CI Workflow",
+    paths: [".github/workflows"],
+  },
+  {
+    description: "Provides a responsible disclosure path.",
+    label: "Security Policy",
+    paths: ["SECURITY.md", ".github/SECURITY.md"],
+  },
+  {
+    description: "Identifies project dependencies and scripts.",
+    label: "Package Metadata",
+    paths: ["package.json"],
+  },
+];
 
 function wait(ms) {
   return new Promise((resolve) => {
@@ -49,6 +86,14 @@ async function fetchJson(url, errorMessage) {
   }
 
   return data;
+}
+
+async function pathExists(owner, repo, path) {
+  const response = await fetch(
+    `${GITHUB_API_BASE_URL}/repos/${owner}/${repo}/contents/${path}`
+  );
+
+  return response.ok;
 }
 
 export async function fetchRepository(owner, repo) {
@@ -99,4 +144,27 @@ export async function fetchCommitActivity(owner, repo) {
   }
 
   return formatRecentCommitsAsWeeklyActivity(commitsData);
+}
+
+export async function fetchProjectReadiness(owner, repo) {
+  return Promise.all(
+    READINESS_CHECKS.map(async (check) => {
+      const exists = await Promise.any(
+        check.paths.map(async (path) => {
+          if (await pathExists(owner, repo, path)) {
+            return path;
+          }
+
+          throw new Error(`${path} not found`);
+        })
+      ).catch(() => null);
+
+      return {
+        description: check.description,
+        label: check.label,
+        passed: Boolean(exists),
+        path: exists,
+      };
+    })
+  );
 }

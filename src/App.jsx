@@ -1,11 +1,13 @@
 import { useState } from "react";
 import CommitSection from "./components/CommitSection";
 import LanguageSection from "./components/LanguageSection";
+import ReadinessSection from "./components/ReadinessSection";
 import RepoOverview from "./components/RepoOverview";
 import SearchHeader from "./components/SearchHeader";
 import {
   fetchCommitActivity,
   fetchLanguages,
+  fetchProjectReadiness,
   fetchRepository,
 } from "./services/githubApi";
 import {
@@ -22,6 +24,7 @@ function App() {
   const [loading, setLoading] = useState(false); // Loading state, for fetch requests
   const [languages, setLanguages] = useState([]); // Repo languages data
   const [commitActivity, setCommitActivity] = useState([]); // Stores commit data
+  const [readinessChecks, setReadinessChecks] = useState([]); // Project readiness metadata
   const [commitRange, setCommitRange] = useState(12); // Stores amount of weeks pulled from API for commit chart (Default 3 months)
 
   const handleSearch = async () => {
@@ -29,6 +32,7 @@ function App() {
     setRepoData(null);
     setLanguages([]);
     setCommitActivity([]);
+    setReadinessChecks([]);
 
     const trimmedInput = repoInput.trim();
     const [owner, repo] = trimmedInput.split("/");
@@ -45,10 +49,12 @@ function App() {
       const data = await fetchRepository(owner, repo);
       const languageData = await fetchLanguages(owner, repo);
       const activityData = await fetchCommitActivity(owner, repo);
+      const readinessData = await fetchProjectReadiness(owner, repo);
 
       setRepoData(data);
       setLanguages(languageData);
       setCommitActivity(activityData);
+      setReadinessChecks(readinessData);
     }
     catch (err) {
       setError(err.message);
@@ -85,6 +91,7 @@ function App() {
         )}
 
         <RepoOverview repoData={repoData} repoStats={repoStats} />
+        <ReadinessSection checks={readinessChecks} />
         <LanguageSection languages={languages} />
         <CommitSection
           commitActivity={commitActivity}
