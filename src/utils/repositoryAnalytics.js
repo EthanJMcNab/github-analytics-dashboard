@@ -69,10 +69,10 @@ export function getCommitInsights(commitActivity, commitRange) {
   const inactiveWeeks = currentPeriod.filter((week) => week.total === 0).length;
   const previousTotal = previousPeriod.reduce((sum, week) => sum + week.total, 0);
 
-  let trend = "No prior data";
+  let trend = "No comparison available";
 
   if (effectiveRange === commitActivity.length) {
-    trend = "Trend: N/A (full range selected)";
+    trend = "Using all available weeks";
   }
 
   if (previousPeriod.length > 0) {
