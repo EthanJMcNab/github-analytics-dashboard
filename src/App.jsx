@@ -2,6 +2,12 @@ import { useState } from "react";
 import LanguageChart from "./components/LanguageChart";
 import LanguageTable from "./components/LanguageTable";
 import CommitActivityChart from "./components/CommitActivityChart";
+import {
+  buildRepoStats,
+  formatLanguages,
+  getCommitInsights,
+  getDisplayedCommitActivity,
+} from "./utils/repositoryAnalytics";
 
 function App() {
   const [repoInput, setRepoInput] = useState(""); // User input for repo
@@ -48,13 +54,7 @@ function App() {
         throw new Error("Failed to fetch language data");
       }
 
-      // Convert GitHub language object to array
-      const formattedLanguages = Object.entries(langData).map(([name, value]) => ({
-        name,
-        value,
-      }));
-
-      setLanguages(formattedLanguages);
+      setLanguages(formatLanguages(langData));
 
       // Fetch weekly commit data from GitHub API (last 52 weeks)
       const activityRes = await fetch(
@@ -84,86 +84,9 @@ function App() {
       setLoading(false);
     }
   }
-  // Repo Statistics formatted for the stat summary cards (underneath the hero)
-  const repoStats = repoData
-    ? [
-      { label: "Stars", value: repoData.stargazers_count },
-      { label: "Forks", value: repoData.forks_count },
-      { label: "Open Issues", value: repoData.open_issues_count },
-      { label: "Primary Language", value: repoData.language || "N/A" },
-      { label: "Last Updated", value: new Date(repoData.updated_at).toLocaleDateString() },
-
-      { label: "Watchers", value: repoData.watchers_count },
-      { label: "Default Branch", value: repoData.default_branch },
-      { label: "Created Date", value: new Date(repoData.created_at).toLocaleDateString() },
-      { label: "License", value: repoData.license?.name || "None" },
-      { label: "Size", value: `${(repoData.size / 1024).toFixed(1)} MB` },
-    ]
-    : [];
-
-  // Slices the recent weeks into weekly commit data, allowing the chart to accept it
-  const displayedCommitActivity = commitActivity
-    .slice(-commitRange)
-    .map((week) => ({
-      name: new Date(week.week * 1000).toLocaleDateString("en-AU", {
-        day: "2-digit",
-        month: "short",
-      }),
-      commits: week.total,
-    }));
-
-  // Derived commit insights for the selected date range
-  const commitInsights = (() => {
-    if (!commitActivity.length) {
-      return null;
-    }
-
-    // Current selected period
-    const currentPeriod = commitActivity.slice(-commitRange);
-
-    // Previous period of the same length, immediately before the current one
-    const previousPeriod = commitActivity.slice(-commitRange * 2, -commitRange);
-
-    const totalCommits = currentPeriod.reduce((sum, week) => sum + week.total, 0);
-
-    const averagePerWeek =
-      currentPeriod.length > 0 ? (totalCommits / currentPeriod.length).toFixed(1) : "0.0";
-
-    const peakWeek = currentPeriod.reduce(
-      (max, week) => (week.total > max.total ? week : max),
-      currentPeriod[0]
-    );
-
-    const inactiveWeeks = currentPeriod.filter((week) => week.total === 0).length;
-
-    const previousTotal = previousPeriod.reduce((sum, week) => sum + week.total, 0);
-
-    let trend = "No prior data";
-
-    if (commitRange === commitActivity.length) {
-      trend = "Trend: N/A (full range selected)";
-    }
-
-    if (previousPeriod.length > 0) {
-      if (previousTotal === 0 && totalCommits > 0) {
-        trend = "↑ New activity";
-      } else if (previousTotal === 0 && totalCommits === 0) {
-        trend = "No change";
-      } else {
-        const percentChange = (((totalCommits - previousTotal) / previousTotal) * 100).toFixed(1);
-        const direction = percentChange >= 0 ? "↑" : "↓";
-        trend = `${direction} ${Math.abs(percentChange)}% vs previous period`;
-      }
-    }
-
-    return {
-      totalCommits,
-      averagePerWeek,
-      peakWeek: peakWeek?.total ?? 0,
-      inactiveWeeks,
-      trend,
-    };
-  })();
+  const repoStats = buildRepoStats(repoData);
+  const displayedCommitActivity = getDisplayedCommitActivity(commitActivity, commitRange);
+  const commitInsights = getCommitInsights(commitActivity, commitRange);
 
   return (
     <div className="app">
