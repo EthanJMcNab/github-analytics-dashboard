@@ -320,6 +320,64 @@ h3 {
 }
 
 /* =========================
+   ISSUE HEALTH
+========================= */
+
+.issueHealthGrid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+}
+
+.issueMetric {
+    background: #fff;
+    border: 1px solid #e7dfd2;
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+}
+
+.issueMetric span,
+.issueLabels span {
+    color: #6b6257;
+    display: block;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+}
+
+.issueMetric strong {
+    color: #111;
+    display: block;
+    font-size: 1.05rem;
+    line-height: 1.3;
+}
+
+.issueLabels {
+    background: #fff;
+    border: 1px solid #e7dfd2;
+    border-radius: 16px;
+    margin-top: 14px;
+    padding: 16px;
+    text-align: center;
+}
+
+.issueLabels div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.issueLabels strong {
+    background: #f5f1ea;
+    border: 1px solid #e7dfd2;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 6px 10px;
+}
+
+/* =========================
    LANGUAGES SECTION
 ========================= */
 
@@ -513,6 +571,10 @@ h3 {
     .readinessGrid {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    .issueHealthGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 @media (max-width: 800px) {
@@ -527,6 +589,10 @@ h3 {
     }
 
     .readinessGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .issueHealthGrid {
         grid-template-columns: 1fr;
     }
 }

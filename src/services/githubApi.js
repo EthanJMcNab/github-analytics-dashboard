@@ -3,6 +3,7 @@ import { formatLanguages } from "../utils/repositoryAnalytics";
 const GITHUB_API_BASE_URL = "https://api.github.com";
 const COMMIT_ACTIVITY_RETRY_DELAY_MS = 1000;
 const COMMIT_ACTIVITY_RETRY_LIMIT = 5;
+const STALE_ISSUE_THRESHOLD_DAYS = 30;
 const READINESS_CHECKS = [
   {
     description: "Helps developers understand the project quickly.",
@@ -96,6 +97,62 @@ async function pathExists(owner, repo, path) {
   return response.ok;
 }
 
+function getDaysSince(dateString) {
+  const date = new Date(dateString);
+  const diffMs = Date.now() - date.getTime();
+
+  return Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+}
+
+function getIssueSearchUrl(owner, repo, state) {
+  const query = encodeURIComponent(`repo:${owner}/${repo} type:issue state:${state}`);
+
+  return `${GITHUB_API_BASE_URL}/search/issues?q=${query}`;
+}
+
+async function fetchIssueCount(owner, repo, state) {
+  const data = await fetchJson(
+    getIssueSearchUrl(owner, repo, state),
+    `Failed to fetch ${state} issue count`
+  );
+
+  return data.total_count ?? 0;
+}
+
+function getTopLabels(issues) {
+  const labelCounts = new Map();
+
+  issues.forEach((issue) => {
+    issue.labels.forEach((label) => {
+      labelCounts.set(label.name, (labelCounts.get(label.name) || 0) + 1);
+    });
+  });
+
+  return Array.from(labelCounts.entries())
+    .sort(([, countA], [, countB]) => countB - countA)
+    .slice(0, 5)
+    .map(([name, count]) => ({
+      name,
+      count,
+    }));
+}
+
+function getIssueHealthStatus(openCount, staleCount) {
+  if (openCount === 0) {
+    return "No open issue backlog";
+  }
+
+  if (staleCount === 0 && openCount <= 10) {
+    return "Manageable backlog";
+  }
+
+  if (staleCount > openCount / 2) {
+    return "Needs triage";
+  }
+
+  return "Active backlog";
+}
+
 export async function fetchRepository(owner, repo) {
   return fetchJson(`${GITHUB_API_BASE_URL}/repos/${owner}/${repo}`, "Repository Not Found");
 }
@@ -167,4 +224,34 @@ export async function fetchProjectReadiness(owner, repo) {
       };
     })
   );
+}
+
+export async function fetchIssueHealth(owner, repo) {
+  const [openCount, closedCount, issuesData] = await Promise.all([
+    fetchIssueCount(owner, repo, "open"),
+    fetchIssueCount(owner, repo, "closed"),
+    fetchJson(
+      `${GITHUB_API_BASE_URL}/repos/${owner}/${repo}/issues?state=open&per_page=100`,
+      "Failed to fetch open issues"
+    ),
+  ]);
+
+  const openIssues = issuesData.filter((issue) => !issue.pull_request);
+  const staleIssues = openIssues.filter(
+    (issue) => getDaysSince(issue.updated_at) >= STALE_ISSUE_THRESHOLD_DAYS
+  );
+  const recentlyOpened = openIssues.filter((issue) => getDaysSince(issue.created_at) <= 14);
+  const oldestOpenIssueAge = openIssues.length
+    ? Math.max(...openIssues.map((issue) => getDaysSince(issue.created_at)))
+    : 0;
+
+  return {
+    closedCount,
+    openCount,
+    oldestOpenIssueAge,
+    recentlyOpenedCount: recentlyOpened.length,
+    staleCount: staleIssues.length,
+    status: getIssueHealthStatus(openCount, staleIssues.length),
+    topLabels: getTopLabels(openIssues),
+  };
 }

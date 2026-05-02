@@ -1,11 +1,13 @@
 import { useState } from "react";
 import CommitSection from "./components/CommitSection";
+import IssueHealthSection from "./components/IssueHealthSection";
 import LanguageSection from "./components/LanguageSection";
 import ReadinessSection from "./components/ReadinessSection";
 import RepoOverview from "./components/RepoOverview";
 import SearchHeader from "./components/SearchHeader";
 import {
   fetchCommitActivity,
+  fetchIssueHealth,
   fetchLanguages,
   fetchProjectReadiness,
   fetchRepository,
@@ -24,6 +26,7 @@ function App() {
   const [loading, setLoading] = useState(false); // Loading state, for fetch requests
   const [languages, setLanguages] = useState([]); // Repo languages data
   const [commitActivity, setCommitActivity] = useState([]); // Stores commit data
+  const [issueHealth, setIssueHealth] = useState(null); // Issue backlog and triage signals
   const [readinessChecks, setReadinessChecks] = useState([]); // Project readiness metadata
   const [commitRange, setCommitRange] = useState(12); // Stores amount of weeks pulled from API for commit chart (Default 3 months)
 
@@ -32,6 +35,7 @@ function App() {
     setRepoData(null);
     setLanguages([]);
     setCommitActivity([]);
+    setIssueHealth(null);
     setReadinessChecks([]);
 
     const trimmedInput = repoInput.trim();
@@ -49,11 +53,13 @@ function App() {
       const data = await fetchRepository(owner, repo);
       const languageData = await fetchLanguages(owner, repo);
       const activityData = await fetchCommitActivity(owner, repo);
+      const issueData = await fetchIssueHealth(owner, repo);
       const readinessData = await fetchProjectReadiness(owner, repo);
 
       setRepoData(data);
       setLanguages(languageData);
       setCommitActivity(activityData);
+      setIssueHealth(issueData);
       setReadinessChecks(readinessData);
     }
     catch (err) {
@@ -92,6 +98,7 @@ function App() {
 
         <RepoOverview repoData={repoData} repoStats={repoStats} />
         <ReadinessSection checks={readinessChecks} />
+        <IssueHealthSection issueHealth={issueHealth} />
         <LanguageSection languages={languages} />
         <CommitSection
           commitActivity={commitActivity}
