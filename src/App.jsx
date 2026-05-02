@@ -16,6 +16,7 @@ function App() {
     setError("");
     setRepoData(null);
     setLanguages([]);
+    setCommitActivity([]);
 
     const trimmedInput = repoInput.trim();
     const [owner, repo] = trimmedInput.split("/");
@@ -43,6 +44,10 @@ function App() {
       const langRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/languages`);
       const langData = await langRes.json();
 
+      if (!langRes.ok) {
+        throw new Error("Failed to fetch language data");
+      }
+
       // Convert GitHub language object to array
       const formattedLanguages = Object.entries(langData).map(([name, value]) => ({
         name,
@@ -63,6 +68,11 @@ function App() {
         throw new Error("Failed to fetch commit activity");
       } else {
         const activityData = await activityRes.json();
+
+        if (!Array.isArray(activityData)) {
+          throw new Error("Invalid commit activity data returned by GitHub");
+        }
+
         setCommitActivity(activityData);
       }
 
