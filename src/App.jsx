@@ -1,7 +1,8 @@
 import { useState } from "react";
-import LanguageChart from "./components/LanguageChart";
-import LanguageTable from "./components/LanguageTable";
-import CommitActivityChart from "./components/CommitActivityChart";
+import CommitSection from "./components/CommitSection";
+import LanguageSection from "./components/LanguageSection";
+import RepoOverview from "./components/RepoOverview";
+import SearchHeader from "./components/SearchHeader";
 import {
   buildRepoStats,
   formatLanguages,
@@ -90,26 +91,11 @@ function App() {
 
   return (
     <div className="app">
-      <div className="hero">
-        <h1>GitHub Analytics Dashboard</h1>
-
-        <form
-          className="searchBar"
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSearch();
-          }}
-        >
-          <input
-            type="text"
-            placeholder="owner/repo"
-            value={repoInput}
-            onChange={(e) => setRepoInput(e.target.value)}
-          />
-
-          <button type="submit">Search</button>
-        </form>
-      </div>
+      <SearchHeader
+        repoInput={repoInput}
+        onRepoInputChange={setRepoInput}
+        onSearch={handleSearch}
+      />
 
       <div className="results">
         {loading && (
@@ -125,99 +111,14 @@ function App() {
           </div>
         )}
 
-        {/*Repo Name, Description & Stats*/}
-        {repoData && (
-          <section className="repoSection">
-            <div className="repoHeader">
-              <h2 className="repoTitle">
-                <a href={repoData.html_url} target="_blank" rel="noreferrer">
-                  {repoData.full_name}
-                </a>
-              </h2>
-
-              {repoData.description && (
-                <p className="repoDescription">
-                  {repoData.description}
-                </p>
-              )}
-            </div>
-
-            <div className="statsGrid">
-              {repoStats.map((stat, index) => (
-                <div className="statCard" key={index}>
-                  <span>{stat.label}</span>
-                  <strong>{stat.value}</strong>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* LanguageData Chart & Table*/}
-        {languages.length > 0 && (
-          <section className="languagesSection">
-            <div className="languagesGrid">
-              <div className="card">
-                <LanguageChart data={languages} />
-              </div>
-
-              <div className="card">
-                <LanguageTable data={languages} />
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Commit Activity */}
-        {/* Github API Pushes only 52 weeks of commit data, hence this is the limitation of the chart */}
-        {commitActivity.length > 0 && (
-          <section className="commitSection">
-            <div className="commitControls">
-              <button onClick={() => setCommitRange(12)}>12W</button>
-              <button onClick={() => setCommitRange(26)}>26W</button>
-              <button onClick={() => setCommitRange(52)}>52W</button>
-            </div>
-
-            <div className="commitGrid">
-              <div className="card">
-                <CommitActivityChart data={displayedCommitActivity} />
-              </div>
-
-              {commitInsights && (
-                <div className="card commitInsights">
-                  <h2 className="commitInsightsTitle">Commit Insights</h2>
-
-                  <div className="commitInsightsList">
-                    <div className="insightItem">
-                      <span>Total Commits</span>
-                      <strong>{commitInsights.totalCommits}</strong>
-                    </div>
-
-                    <div className="insightItem">
-                      <span>Avg / Week</span>
-                      <strong>{commitInsights.averagePerWeek}</strong>
-                    </div>
-
-                    <div className="insightItem">
-                      <span>Peak Week</span>
-                      <strong>{commitInsights.peakWeek}</strong>
-                    </div>
-
-                    <div className="insightItem">
-                      <span>Inactive Weeks</span>
-                      <strong>{commitInsights.inactiveWeeks}</strong>
-                    </div>
-
-                    <div className="insightItem">
-                      <span>Trend</span>
-                      <strong>{commitInsights.trend}</strong>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
+        <RepoOverview repoData={repoData} repoStats={repoStats} />
+        <LanguageSection languages={languages} />
+        <CommitSection
+          commitActivity={commitActivity}
+          commitInsights={commitInsights}
+          displayedCommitActivity={displayedCommitActivity}
+          onCommitRangeChange={setCommitRange}
+        />
 
       </div>
       <div className="footer">
