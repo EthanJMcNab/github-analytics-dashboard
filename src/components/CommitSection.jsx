@@ -1,21 +1,45 @@
 import CommitActivityChart from "./CommitActivityChart";
 
+const STANDARD_COMMIT_RANGES = [12, 26, 52];
+
+function getCommitRangeOptions(availableWeeks) {
+  const options = STANDARD_COMMIT_RANGES.filter((range) => range <= availableWeeks);
+
+  if (availableWeeks > 0 && !options.includes(availableWeeks)) {
+    options.push(availableWeeks);
+  }
+
+  return options;
+}
+
 function CommitSection({
   commitActivity,
   commitInsights,
   displayedCommitActivity,
+  effectiveCommitRange,
   onCommitRangeChange,
 }) {
   if (!commitActivity.length) {
     return null;
   }
 
+  const commitRangeOptions = getCommitRangeOptions(commitActivity.length);
+
   return (
     <section className="commitSection">
       <div className="commitControls">
-        <button onClick={() => onCommitRangeChange(12)}>12W</button>
-        <button onClick={() => onCommitRangeChange(26)}>26W</button>
-        <button onClick={() => onCommitRangeChange(52)}>52W</button>
+        {commitRangeOptions.map((range) => (
+          <button
+            className={effectiveCommitRange === range ? "active" : ""}
+            key={range}
+            onClick={() => onCommitRangeChange(range)}
+            type="button"
+          >
+            {range === commitActivity.length && !STANDARD_COMMIT_RANGES.includes(range)
+              ? `${range}W available`
+              : `${range}W`}
+          </button>
+        ))}
       </div>
 
       <div className="commitGrid">
@@ -29,7 +53,7 @@ function CommitSection({
 
             <div className="commitInsightsList">
               <div className="insightItem">
-                <span>Total Commits</span>
+                <span>Total Commits ({effectiveCommitRange}W)</span>
                 <strong>{commitInsights.totalCommits}</strong>
               </div>
 

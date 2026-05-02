@@ -8,6 +8,7 @@ import {
   formatLanguages,
   getCommitInsights,
   getDisplayedCommitActivity,
+  getEffectiveCommitRange,
 } from "./utils/repositoryAnalytics";
 
 function App() {
@@ -86,6 +87,7 @@ function App() {
     }
   }
   const repoStats = buildRepoStats(repoData);
+  const effectiveCommitRange = getEffectiveCommitRange(commitActivity, commitRange);
   const displayedCommitActivity = getDisplayedCommitActivity(commitActivity, commitRange);
   const commitInsights = getCommitInsights(commitActivity, commitRange);
 
@@ -117,6 +119,7 @@ function App() {
           commitActivity={commitActivity}
           commitInsights={commitInsights}
           displayedCommitActivity={displayedCommitActivity}
+          effectiveCommitRange={effectiveCommitRange}
           onCommitRangeChange={setCommitRange}
         />
 

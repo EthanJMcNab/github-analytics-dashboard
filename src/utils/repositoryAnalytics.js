@@ -25,9 +25,19 @@ export function buildRepoStats(repoData) {
   ];
 }
 
+export function getEffectiveCommitRange(commitActivity, commitRange) {
+  if (!commitActivity.length) {
+    return 0;
+  }
+
+  return Math.min(commitRange, commitActivity.length);
+}
+
 export function getDisplayedCommitActivity(commitActivity, commitRange) {
+  const effectiveRange = getEffectiveCommitRange(commitActivity, commitRange);
+
   return commitActivity
-    .slice(-commitRange)
+    .slice(-effectiveRange)
     .map((week) => ({
       name: new Date(week.week * 1000).toLocaleDateString("en-AU", {
         day: "2-digit",
@@ -42,8 +52,9 @@ export function getCommitInsights(commitActivity, commitRange) {
     return null;
   }
 
-  const currentPeriod = commitActivity.slice(-commitRange);
-  const previousPeriod = commitActivity.slice(-commitRange * 2, -commitRange);
+  const effectiveRange = getEffectiveCommitRange(commitActivity, commitRange);
+  const currentPeriod = commitActivity.slice(-effectiveRange);
+  const previousPeriod = commitActivity.slice(-effectiveRange * 2, -effectiveRange);
 
   const totalCommits = currentPeriod.reduce((sum, week) => sum + week.total, 0);
 
@@ -60,7 +71,7 @@ export function getCommitInsights(commitActivity, commitRange) {
 
   let trend = "No prior data";
 
-  if (commitRange === commitActivity.length) {
+  if (effectiveRange === commitActivity.length) {
     trend = "Trend: N/A (full range selected)";
   }
 

@@ -332,6 +332,12 @@ h3 {
     background: #f0ebe3;
 }
 
+.commitControls button.active {
+    background: #111;
+    color: #f5f1ea;
+    border-color: #111;
+}
+
 .commitTitle {
     text-align: center;
     margin-bottom: 16px;
