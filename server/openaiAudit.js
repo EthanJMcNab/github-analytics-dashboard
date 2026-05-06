@@ -1,5 +1,6 @@
 const OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses";
-const DEFAULT_OPENAI_MODEL = "gpt-5-mini";
+const DEFAULT_OPENAI_MODEL = "gpt-4.1-mini";
+const INCOMPLETE_RESPONSE_STATUSES = new Set(["incomplete", "cancelled", "failed"]);
 
 const AUDIT_SCHEMA = {
   type: "object",
@@ -97,6 +98,30 @@ function extractOutputText(responseData) {
   return outputText ?? "";
 }
 
+function parseAuditResponse(outputText) {
+  try {
+    return JSON.parse(outputText);
+  } catch {
+    throw new Error("The AI audit response was incomplete. Please retry the audit.");
+  }
+}
+
+function isRetryableAuditError(error) {
+  return error instanceof Error && error.message.includes("AI audit response was incomplete");
+}
+
+function assertCompleteResponse(responseData) {
+  if (INCOMPLETE_RESPONSE_STATUSES.has(responseData?.status)) {
+    throw new Error("The AI audit response was incomplete. Please retry the audit.");
+  }
+
+  const incompleteReason = responseData?.incomplete_details?.reason;
+
+  if (incompleteReason) {
+    throw new Error(`The AI audit response was incomplete (${incompleteReason}). Please retry the audit.`);
+  }
+}
+
 function validateSnapshot(snapshot) {
   if (!snapshot || typeof snapshot !== "object") {
     throw new Error("Repository analytics snapshot is required.");
@@ -111,6 +136,64 @@ function buildAuditPrompt(snapshot) {
   return `Analyze this GitHub repository analytics snapshot and produce an evidence-based engineering health audit. Only use the data in the snapshot. Do not invent files, dependencies, vulnerabilities, contributors, or CI results that are not present. Be practical for a working engineer preparing the repository for employers or collaborators.\n\nRepository analytics snapshot JSON:\n${JSON.stringify(snapshot, null, 2)}`;
 }
 
+async function requestRepositoryAudit(snapshot, apiKey, model) {
+  const requestBody = {
+    model,
+    input: [
+      {
+        role: "system",
+        content:
+          "You are a senior software engineering reviewer. Return compact, evidence-based repository health JSON. Keep every string under 180 characters. Ground every finding in the supplied analytics snapshot.",
+      },
+      {
+        role: "user",
+        content: buildAuditPrompt(snapshot),
+      },
+    ],
+    text: {
+      format: {
+        type: "json_schema",
+        name: "repository_audit",
+        strict: true,
+        schema: AUDIT_SCHEMA,
+      },
+    },
+    max_output_tokens: 8000,
+  };
+
+  if (model.startsWith("gpt-5") || model.startsWith("o")) {
+    requestBody.reasoning = {
+      effort: "minimal",
+    };
+  }
+
+  const response = await fetch(OPENAI_RESPONSES_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  });
+
+  const responseData = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    const detail = responseData?.error?.message || "OpenAI audit request failed.";
+    throw new Error(detail);
+  }
+
+  assertCompleteResponse(responseData);
+
+  const outputText = extractOutputText(responseData);
+
+  if (!outputText) {
+    throw new Error("OpenAI returned an empty audit response.");
+  }
+
+  return parseAuditResponse(outputText);
+}
+
 export async function createRepositoryAudit(snapshot, options = {}) {
   validateSnapshot(snapshot);
 
@@ -121,51 +204,15 @@ export async function createRepositoryAudit(snapshot, options = {}) {
     throw new Error("OPENAI_API_KEY is required to run the AI repository audit.");
   }
 
-  const response = await fetch(OPENAI_RESPONSES_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model,
-      input: [
-        {
-          role: "system",
-          content:
-            "You are a senior software engineering reviewer. Return a concise, evidence-based repository health audit as structured JSON. Ground every finding in the supplied analytics snapshot.",
-        },
-        {
-          role: "user",
-          content: buildAuditPrompt(snapshot),
-        },
-      ],
-      text: {
-        format: {
-          type: "json_schema",
-          name: "repository_audit",
-          strict: true,
-          schema: AUDIT_SCHEMA,
-        },
-      },
-      max_output_tokens: 1800,
-    }),
-  });
+  try {
+    return await requestRepositoryAudit(snapshot, apiKey, model);
+  } catch (error) {
+    if (!isRetryableAuditError(error)) {
+      throw error;
+    }
 
-  const responseData = await response.json().catch(() => null);
-
-  if (!response.ok) {
-    const detail = responseData?.error?.message || "OpenAI audit request failed.";
-    throw new Error(detail);
+    return requestRepositoryAudit(snapshot, apiKey, model);
   }
-
-  const outputText = extractOutputText(responseData);
-
-  if (!outputText) {
-    throw new Error("OpenAI returned an empty audit response.");
-  }
-
-  return JSON.parse(outputText);
 }
 
 export async function readJsonRequest(req) {

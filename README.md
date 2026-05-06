@@ -63,7 +63,7 @@ For local AI audits, add an OpenAI API key to `.env.local`:
 
 ```bash
 OPENAI_API_KEY=sk_your_openai_key_here
-OPENAI_MODEL=gpt-5-mini
+OPENAI_MODEL=gpt-4.1-mini
 ```
 
 The browser sends a structured repository analytics snapshot to `/api/audit`. In local development, Vite handles that route as server-side middleware. In deployment, `api/audit.js` handles the same route, so the OpenAI key remains server-side.
