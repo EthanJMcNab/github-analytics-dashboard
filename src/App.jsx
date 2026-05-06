@@ -156,7 +156,7 @@ function App() {
       </div>
       <div className="footer">
         <p>
-          Created by Ethan J McNab. Data sourced via GitHub API.
+          Created by Ethan J McNab. GitHub data, structured analytics, and server-side AI review.
         </p>
       </div>
     </div>
