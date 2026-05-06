@@ -542,6 +542,201 @@ h3 {
 }
 
 /* =========================
+   AI AUDIT
+========================= */
+
+.aiAuditSection {
+    margin-top: 44px;
+}
+
+.aiAuditShell {
+    background: #fff;
+    border: 1px solid #e7dfd2;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.aiAuditIntro {
+    align-items: center;
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.aiAuditIntro h3 {
+    font-size: 1.3rem;
+    font-weight: 500;
+    line-height: 1.25;
+    margin: 6px 0 0;
+}
+
+.aiAuditEyebrow {
+    color: #6b6257;
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.aiAuditIntro button {
+    background: #111;
+    border: 1px solid #111;
+    border-radius: 999px;
+    color: #f5f1ea;
+    cursor: pointer;
+    flex: 0 0 auto;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 11px 18px;
+}
+
+.aiAuditIntro button:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.aiAuditError {
+    background: #fdf3f2;
+    border: 1px solid #e7b4b0;
+    border-radius: 12px;
+    color: #6b3a3a;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 16px;
+    padding: 14px 16px;
+}
+
+.aiAuditResults {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 0.9fr 1.1fr;
+    margin-top: 18px;
+}
+
+.aiAuditScorePanel,
+.aiAuditStrengths,
+.aiAuditFindings,
+.aiAuditActions {
+    background: #f8f5ef;
+    border: 1px solid #e7dfd2;
+    border-radius: 12px;
+    padding: 18px;
+}
+
+.aiAuditScorePanel span,
+.aiAuditScorePanel small {
+    color: #6b6257;
+    display: block;
+    font-size: 0.85rem;
+}
+
+.aiAuditScorePanel strong {
+    display: block;
+    font-size: 3rem;
+    line-height: 1;
+    margin: 8px 0;
+}
+
+.aiAuditScorePanel p,
+.aiAuditActions p,
+.aiFinding p,
+.aiFinding span {
+    color: #6b6257;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    margin: 0;
+}
+
+.aiAuditStrengths h3,
+.aiAuditFindings h3,
+.aiAuditActions h3 {
+    font-size: 1.15rem;
+    font-weight: 500;
+    margin: 0 0 12px;
+}
+
+.aiAuditStrengths ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.aiAuditStrengths li {
+    line-height: 1.45;
+    margin-bottom: 8px;
+}
+
+.aiAuditFindings,
+.aiAuditActions {
+    grid-column: 1 / -1;
+}
+
+.aiFinding,
+.aiAuditActions article {
+    background: #fff;
+    border: 1px solid #e7dfd2;
+    border-radius: 10px;
+    padding: 14px;
+}
+
+.aiFinding + .aiFinding,
+.aiAuditActions article + article {
+    margin-top: 10px;
+}
+
+.aiFindingHeader {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.aiFindingHeader strong,
+.aiAuditActions strong {
+    text-transform: capitalize;
+}
+
+.severityBadge {
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 4px 9px;
+    text-transform: uppercase;
+}
+
+.severity-low {
+    background: #edf7ee;
+    color: #25612b;
+}
+
+.severity-medium {
+    background: #fff3d6;
+    color: #755000;
+}
+
+.severity-high {
+    background: #fdf3f2;
+    color: #8b2e2e;
+}
+
+@media (max-width: 800px) {
+    .aiAuditIntro {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .aiAuditIntro button {
+        width: 100%;
+    }
+
+    .aiAuditResults {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================
    FOOTER
 ========================= */
 

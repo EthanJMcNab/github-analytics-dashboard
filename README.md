@@ -12,6 +12,7 @@ The project focuses on turning raw GitHub REST API responses into clear, useful 
 - Review weekly commit activity across 12, 26, or 52 week ranges.
 - See derived commit insights including total commits, average commits per week, peak activity, inactive weeks, and trend versus the previous period.
 - Handles common API edge cases such as missing repositories, unavailable commit stats, and invalid API responses.
+- Generate an AI repository audit with structured, evidence-based findings and next actions.
 
 ## Tech Stack
 
@@ -54,7 +55,18 @@ For local testing, create `.env.local` and add a low-privilege GitHub personal a
 GITHUB_TOKEN=github_pat_your_token_here
 ```
 
-The token is read by the Vite dev server and attached to proxied `/api/github` requests. Do not prefix it with `VITE_`; Vite exposes `VITE_` values to browser code. Restart `npm run dev` after changing `.env.local`.
+The token is attached server-side to proxied `/api/github` requests. In local development, Vite handles the proxy. In deployment, `api/github/[...path].js` handles the proxy. Do not prefix it with `VITE_`; Vite exposes `VITE_` values to browser code. Restart `npm run dev` after changing `.env.local`.
+
+### AI Repository Audit
+
+For local AI audits, add an OpenAI API key to `.env.local`:
+
+```bash
+OPENAI_API_KEY=sk_your_openai_key_here
+OPENAI_MODEL=gpt-5-mini
+```
+
+The browser sends a structured repository analytics snapshot to `/api/audit`. In local development, Vite handles that route as server-side middleware. In deployment, `api/audit.js` handles the same route, so the OpenAI key remains server-side.
 
 ### Useful Scripts
 

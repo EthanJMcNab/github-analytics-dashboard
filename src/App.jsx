@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import AiAuditSection from "./components/AiAuditSection";
 import CommitSection from "./components/CommitSection";
 import IssueHealthSection from "./components/IssueHealthSection";
 import LanguageSection from "./components/LanguageSection";
@@ -12,8 +13,10 @@ import {
   fetchProjectReadiness,
   fetchRepository,
 } from "./services/githubApi";
+import { fetchRepositoryAudit } from "./services/aiAuditApi";
 import {
   buildRepoStats,
+  buildRepositorySnapshot,
   getCommitInsights,
   getDisplayedCommitActivity,
   getEffectiveCommitRange,
@@ -29,6 +32,9 @@ function App() {
   const [issueHealth, setIssueHealth] = useState(null); // Issue backlog and triage signals
   const [readinessChecks, setReadinessChecks] = useState([]); // Project readiness metadata
   const [commitRange, setCommitRange] = useState(12); // Stores amount of weeks pulled from API for commit chart (Default 3 months)
+  const [audit, setAudit] = useState(null);
+  const [auditError, setAuditError] = useState("");
+  const [auditLoading, setAuditLoading] = useState(false);
 
   const handleSearch = async () => {
     setError("");
@@ -37,6 +43,8 @@ function App() {
     setCommitActivity([]);
     setIssueHealth(null);
     setReadinessChecks([]);
+    setAudit(null);
+    setAuditError("");
 
     const trimmedInput = repoInput.trim();
     const [owner, repo] = trimmedInput.split("/");
@@ -73,6 +81,36 @@ function App() {
   const effectiveCommitRange = getEffectiveCommitRange(commitActivity, commitRange);
   const displayedCommitActivity = getDisplayedCommitActivity(commitActivity, commitRange);
   const commitInsights = getCommitInsights(commitActivity, commitRange);
+  const repositorySnapshot = useMemo(
+    () =>
+      buildRepositorySnapshot({
+        repoData,
+        languages,
+        issueHealth,
+        readinessChecks,
+        commitInsights,
+        effectiveCommitRange,
+      }),
+    [repoData, languages, issueHealth, readinessChecks, commitInsights, effectiveCommitRange]
+  );
+
+  const handleGenerateAudit = async () => {
+    if (!repositorySnapshot) {
+      return;
+    }
+
+    setAuditError("");
+    setAuditLoading(true);
+
+    try {
+      const auditData = await fetchRepositoryAudit(repositorySnapshot);
+      setAudit(auditData);
+    } catch (err) {
+      setAuditError(err.message);
+    } finally {
+      setAuditLoading(false);
+    }
+  };
 
   return (
     <div className="app">
@@ -106,6 +144,13 @@ function App() {
           displayedCommitActivity={displayedCommitActivity}
           effectiveCommitRange={effectiveCommitRange}
           onCommitRangeChange={setCommitRange}
+        />
+        <AiAuditSection
+          audit={audit}
+          error={auditError}
+          loading={auditLoading}
+          onGenerateAudit={handleGenerateAudit}
+          snapshotReady={Boolean(repositorySnapshot)}
         />
 
       </div>

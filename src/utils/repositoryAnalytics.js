@@ -95,3 +95,58 @@ export function getCommitInsights(commitActivity, commitRange) {
     trend,
   };
 }
+
+
+export function buildRepositorySnapshot({
+  repoData,
+  languages,
+  issueHealth,
+  readinessChecks,
+  commitInsights,
+  effectiveCommitRange,
+}) {
+  if (!repoData) {
+    return null;
+  }
+
+  return {
+    generatedAt: new Date().toISOString(),
+    repository: {
+      fullName: repoData.full_name,
+      description: repoData.description || "",
+      url: repoData.html_url,
+      defaultBranch: repoData.default_branch,
+      primaryLanguage: repoData.language || "N/A",
+      stars: repoData.stargazers_count,
+      forks: repoData.forks_count,
+      watchers: repoData.watchers_count,
+      openIssues: repoData.open_issues_count,
+      license: repoData.license?.name || "None",
+      sizeMb: Number((repoData.size / 1024).toFixed(1)),
+      createdAt: repoData.created_at,
+      updatedAt: repoData.updated_at,
+      pushedAt: repoData.pushed_at,
+    },
+    languages: languages.map((language) => ({
+      name: language.name,
+      bytes: language.value,
+    })),
+    readiness: readinessChecks.map((check) => ({
+      label: check.label,
+      passed: check.passed,
+      path: check.path || null,
+      description: check.description,
+    })),
+    issueHealth,
+    commitActivity: commitInsights
+      ? {
+          rangeWeeks: effectiveCommitRange,
+          totalCommits: commitInsights.totalCommits,
+          averagePerWeek: commitInsights.averagePerWeek,
+          peakWeek: commitInsights.peakWeek,
+          inactiveWeeks: commitInsights.inactiveWeeks,
+          trend: commitInsights.trend,
+        }
+      : null,
+  };
+}

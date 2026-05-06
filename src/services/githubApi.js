@@ -1,6 +1,6 @@
 import { formatLanguages } from "../utils/repositoryAnalytics";
 
-const GITHUB_API_BASE_URL = import.meta.env.DEV ? "/api/github" : "https://api.github.com";
+const GITHUB_API_BASE_URL = "/api/github";
 const COMMIT_ACTIVITY_RETRY_DELAY_MS = 1000;
 const COMMIT_ACTIVITY_RETRY_LIMIT = 5;
 const STALE_ISSUE_THRESHOLD_DAYS = 30;
