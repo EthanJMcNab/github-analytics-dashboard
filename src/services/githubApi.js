@@ -1,6 +1,6 @@
 import { formatLanguages } from "../utils/repositoryAnalytics";
 
-const GITHUB_API_BASE_URL = "https://api.github.com";
+const GITHUB_API_BASE_URL = import.meta.env.DEV ? "/api/github" : "https://api.github.com";
 const COMMIT_ACTIVITY_RETRY_DELAY_MS = 1000;
 const COMMIT_ACTIVITY_RETRY_LIMIT = 5;
 const STALE_ISSUE_THRESHOLD_DAYS = 30;
@@ -78,8 +78,17 @@ function formatRecentCommitsAsWeeklyActivity(commits) {
     }));
 }
 
+function githubFetch(url) {
+  return fetch(url, {
+    headers: {
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+    },
+  });
+}
+
 async function fetchJson(url, errorMessage) {
-  const response = await fetch(url);
+  const response = await githubFetch(url);
   const data = await response.json();
 
   if (!response.ok) {
@@ -90,7 +99,7 @@ async function fetchJson(url, errorMessage) {
 }
 
 async function pathExists(owner, repo, path) {
-  const response = await fetch(
+  const response = await githubFetch(
     `${GITHUB_API_BASE_URL}/repos/${owner}/${repo}/contents/${path}`
   );
 
@@ -168,7 +177,7 @@ export async function fetchLanguages(owner, repo) {
 
 export async function fetchCommitActivity(owner, repo) {
   for (let attempt = 0; attempt <= COMMIT_ACTIVITY_RETRY_LIMIT; attempt += 1) {
-    const response = await fetch(
+    const response = await githubFetch(
       `${GITHUB_API_BASE_URL}/repos/${owner}/${repo}/stats/commit_activity`
     );
 

@@ -46,6 +46,16 @@ npm install
 npm run dev
 ```
 
+### Optional GitHub Token
+
+For local testing, create `.env.local` and add a low-privilege GitHub personal access token to raise GitHub REST API rate limits:
+
+```bash
+GITHUB_TOKEN=github_pat_your_token_here
+```
+
+The token is read by the Vite dev server and attached to proxied `/api/github` requests. Do not prefix it with `VITE_`; Vite exposes `VITE_` values to browser code. Restart `npm run dev` after changing `.env.local`.
+
 ### Useful Scripts
 
 ```bash
