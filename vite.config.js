@@ -14,6 +14,18 @@ export default defineConfig(({ mode }) => {
       {
         name: "local-ai-audit-api",
         configureServer: (server) => {
+          server.middlewares.use("/api/github", (req, res, next) => {
+            if (["GET", "HEAD"].includes(req.method)) {
+              next();
+              return;
+            }
+
+            res.statusCode = 405;
+            res.setHeader("Allow", "GET, HEAD");
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ error: "Method not allowed" }));
+          });
+
           server.middlewares.use("/api/audit", async (req, res) => {
             await handleAuditRequest(req, res, env);
           });

@@ -1,15 +1,5 @@
 const GITHUB_API_BASE_URL = "https://api.github.com";
 
-async function readRequestBody(req) {
-  const chunks = [];
-
-  for await (const chunk of req) {
-    chunks.push(chunk);
-  }
-
-  return chunks.length ? Buffer.concat(chunks) : undefined;
-}
-
 function getGitHubPath(req) {
   const requestUrl = new URL(req.url, `http://${req.headers.host}`);
   const path = requestUrl.searchParams.get("path");
@@ -22,6 +12,14 @@ function getGitHubPath(req) {
 }
 
 export default async function handler(req, res) {
+  if (!["GET", "HEAD"].includes(req.method)) {
+    res.statusCode = 405;
+    res.setHeader("Allow", "GET, HEAD");
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ error: "Method not allowed" }));
+    return;
+  }
+
   try {
     const githubPath = getGitHubPath(req);
     const targetUrl = `${GITHUB_API_BASE_URL}${githubPath}`;
@@ -39,7 +37,6 @@ export default async function handler(req, res) {
     const response = await fetch(targetUrl, {
       method: req.method,
       headers,
-      body: ["GET", "HEAD"].includes(req.method) ? undefined : await readRequestBody(req),
     });
 
     const contentType = response.headers.get("content-type");
