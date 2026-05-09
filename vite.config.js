@@ -26,7 +26,10 @@ export default defineConfig(({ mode }) => {
           target: "https://api.github.com",
           changeOrigin: true,
           secure: true,
-          rewrite: (path) => path.replace(/^\/api\/github/, ""),
+          rewrite: (requestPath) => {
+            const url = new URL(requestPath, "http://localhost");
+            return url.searchParams.get("path") || "/";
+          },
           configure: (proxy) => {
             proxy.on("proxyReq", (proxyReq) => {
               proxyReq.setHeader("Accept", "application/vnd.github+json");
