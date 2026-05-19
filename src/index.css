@@ -800,7 +800,21 @@ h3 {
 
     .searchBar input,
     .searchBar button {
+        box-sizing: border-box;
         width: 100%;
+    }
+
+    .searchBar input {
+        min-height: 42px;
+        padding: 0 4px;
+        text-align: center;
+    }
+
+    .searchBar button {
+        align-items: center;
+        display: flex;
+        justify-content: center;
+        min-height: 44px;
     }
 
     .statsGrid,
