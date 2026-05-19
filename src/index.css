@@ -779,15 +779,85 @@ h3 {
 }
 
 @media (max-width: 650px) {
-    .statsGrid {
-        grid-template-columns: 1fr;
+    .app {
+        padding: 0 14px;
     }
 
-    .readinessGrid {
-        grid-template-columns: 1fr;
+    .hero {
+        padding-top: 42px;
     }
 
+    .hero h1 {
+        font-size: 2.35rem;
+    }
+
+    .searchBar {
+        border-radius: 18px;
+        flex-direction: column;
+        gap: 10px;
+        padding: 14px;
+    }
+
+    .searchBar input,
+    .searchBar button {
+        width: 100%;
+    }
+
+    .statsGrid,
+    .readinessGrid,
     .issueHealthGrid {
-        grid-template-columns: 1fr;
+        display: flex;
+        gap: 12px;
+        margin-left: -14px;
+        margin-right: -14px;
+        overflow-x: auto;
+        padding: 0 14px 10px;
+        scroll-padding-left: 14px;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .statCard,
+    .readinessItem,
+    .issueMetric {
+        flex: 0 0 220px;
+        scroll-snap-align: start;
+    }
+
+    .readinessItem {
+        min-height: 150px;
+    }
+
+    .statsGrid::-webkit-scrollbar,
+    .readinessGrid::-webkit-scrollbar,
+    .issueHealthGrid::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .statsGrid::-webkit-scrollbar-thumb,
+    .readinessGrid::-webkit-scrollbar-thumb,
+    .issueHealthGrid::-webkit-scrollbar-thumb {
+        background: #d8cbb8;
+        border-radius: 999px;
+    }
+
+    .statsGrid::-webkit-scrollbar-track,
+    .readinessGrid::-webkit-scrollbar-track,
+    .issueHealthGrid::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .card,
+    .aiAuditShell,
+    .issueLabels {
+        padding: 16px;
+    }
+
+    .chartContainer {
+        height: 280px;
+    }
+
+    .commitChartContainer {
+        height: 300px;
     }
 }
